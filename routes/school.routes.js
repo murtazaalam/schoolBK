@@ -1,0 +1,1 @@
+const adminRoutes = require('express').Router();
