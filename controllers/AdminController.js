@@ -1,6 +1,7 @@
 const bcrypt = require("bcryptjs");
 const { jwtGenerator } = require("../utils/jwt");
 const AdminService = require("../services/AdminService");
+const SchoolService = require("../services/SchoolService");
 
 class AdminController {
     static async register(req, res){
@@ -45,6 +46,31 @@ class AdminController {
         }
         catch(error){
             console.log("Admin Login Error: ", error);
+        }
+    }
+
+    static async addSchool(req, res){
+        const { phone, email, password } = req.body;
+        const data = await SchoolService.getSchool({$or: [{phone, email}]});
+        if(data) return res.status(400).json({message: "School Already Exists", statusCode: 400});
+        const hashPassword = bcrypt.hashSync(password, 8);
+        const body = {
+            name: req.body.name,
+            email: req.body.email,
+            phone: req.body.phone,
+            address: req.body.address,
+            city: req.body.city,
+            state: req.body.state,
+            status: "active",
+            created_at: new Date(),
+            password: hashPassword,
+        }
+        try{
+            await SchoolService.addSchool(body);
+            return res.status(200).json({message: "School Registered", statusCode: 200})
+        }
+        catch(error){
+            console.log("School Registration Error: ", error);
         }
     }
 }

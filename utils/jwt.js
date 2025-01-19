@@ -8,7 +8,6 @@ const jwtGenerator = (payload) => {
         console.log(err);
     }
 }
-
 const jwtVerify = (token) => {
     let isTokenVerify;
     try{

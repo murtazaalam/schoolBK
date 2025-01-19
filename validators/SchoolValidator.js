@@ -1,14 +1,24 @@
-const { body, validationResult } = require("express-validator");
+const { body, validationResult, oneOf } = require("express-validator");
 
-exports.registerValidator = [
+exports.newSchoolValidator = [
     body("name").notEmpty()
                 .withMessage("Name Is Required"),
                 // .isAlpha()
                 // .withMessage("Invalid Name"),
-    body("email").notEmpty()
-                 .withMessage("Email Is Required")
-                 .isEmail()
-                 .withMessage("Invalid Email"),
+    // body("email").notEmpty()
+    //              .withMessage("Email Is Required")
+    //              .isEmail()
+    //              .withMessage("Invalid Email"),
+    // body("phone").isMobilePhone("en-IN").withMessage("Invalid Phone Number"),
+    oneOf([
+        body("email").notEmpty()
+                     .withMessage("Email Is Required")
+                     .isEmail()
+                     .withMessage("Invalid Email"),
+        body("phone").notEmpty()
+                     .withMessage("Name Is Required")
+                     .isMobilePhone("en-IN").withMessage("Invalid Phone Number")
+    ]),
     body("password").notEmpty()
                     .withMessage("Password Is Required")
                     .isStrongPassword()
