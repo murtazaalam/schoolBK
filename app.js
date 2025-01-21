@@ -12,6 +12,8 @@ const start = Date.now();
 const connect = require("./config/db.config");
 const adminRoutes = require("./routes/admin.routes");
 const schoolRoutes = require("./routes/school.routes");
+const studentRoutes = require("./routes/student.routes");
+const teacherRoutes = require("./routes/teacher.routes");
 
 const port = process.env.PORT || 8080;
 const cors = require("cors");
@@ -27,6 +29,8 @@ app.get('/', (req, res) => {
 
 app.use("/admin", adminRoutes);
 app.use("/school", schoolRoutes);
+app.use("/student", studentRoutes);
+app.use("/teacher", teacherRoutes);
 
 app.listen(port, () => {
     console.log("Listening to port => ",port);

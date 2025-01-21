@@ -16,6 +16,11 @@ const TeacherDetails = new Schema({
         unique: true,
         required: false
     },
+    school:{
+        type: Schema.Types.ObjectId, 
+        ref: 'school', 
+        required: true
+    },
     address: {
         type: String,
         unique: false,
@@ -46,4 +51,4 @@ const TeacherDetails = new Schema({
     }
 })
 
-module.exports = mongoose.model('teacher_details', TeacherDetails);
+module.exports = mongoose.model('teacher', TeacherDetails);

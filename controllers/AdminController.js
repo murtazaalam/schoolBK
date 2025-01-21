@@ -1,8 +1,9 @@
 const bcrypt = require("bcryptjs");
-const { jwtGenerator } = require("../utils/jwt");
+const { jwtGenerator,jwtVerify } = require("../utils/jwt");
 const AdminService = require("../services/AdminService");
 const SchoolService = require("../services/SchoolService");
 const TeacherService = require("../services/TeacherService");
+const StudentService = require("../services/StudentService");
 
 class AdminController {
     static async register(req, res){
@@ -76,7 +77,15 @@ class AdminController {
     }
     static async addTeacher(req,res){
         const {phone, email, password} = req.body;
-        const data = await TeacherService.getTeacherDetails({$or: [{phone, email}]});
+        const token = req.headers.authorization;
+        let schoolId;
+        try {
+            const decodedToken = jwtVerify(token);
+            schoolId = decodedToken._id; 
+        } catch (error) {
+            return res.status(401).json({ message: "Invalid or Expired Token", statusCode: 401 });
+        }
+        const data = await TeacherService.getTeacher({$or: [{phone, email}]});
         if(data) return res.status(400).json({message: "Teacher Already Exists", statusCode: 400});
         const hashPassword = bcrypt.hashSync(password, 8);
         const body = {
@@ -87,6 +96,7 @@ class AdminController {
             status: "active",
             created_at: new Date(),
             password: hashPassword,
+            school: schoolId
         }
         try{
             await TeacherService.addTeacher(body);
@@ -94,6 +104,36 @@ class AdminController {
         }
         catch(error){
             console.log("Teacher Registration Error: ", error);
+        }
+    }
+    static async addStudent(req,res){
+        const {phone, email, password} = req.body;
+        let schoolId;
+        try {
+            const decodedToken = jwtVerify(token);
+            schoolId = decodedToken._id; 
+        } catch (error) {
+            return res.status(401).json({ message: "Invalid or Expired Token", statusCode: 401 });
+        }
+        const data = await StudentService.getStudentDetails({$or: [{phone, email}]});
+        if(data) return res.status(400).json({message: "Teacher Already Exists", statusCode: 400});
+        const hashPassword = bcrypt.hashSync(password, 8);
+        const body = {
+            name: req.body.name,
+            email: req.body.email,
+            phone: req.body.phone,
+            address: req.body.address,
+            status: "active",
+            created_at: new Date(),
+            password: hashPassword,
+            school:schoolId,
+        }
+        try{
+            await StudentService.add(body);
+            return res.status(200).json({message: "Student Registered ", statusCode: 200})
+        }
+        catch(error){
+            console.log("Student Registration Error: ", error);
         }
     }
 }

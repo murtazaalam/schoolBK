@@ -1,17 +1,10 @@
 const school = require('../modals/SchoolModal');
-const TeacherDetails = require('../modals/TeacherDetailsModel');
+const Teacher = require('../modals/TeacherModal');
 class TeacherService {
-    static async getTeacherDetails(filter) {
-        try{
-            return await school.findOne(filter);
-        }
-        catch(error){
-            throw new Error(error);
-        }
-    }
+    
     static async getTeacher(filter) {
         try{
-            return await TeacherDetails.findOne(filter);
+            return await Teacher.findOne(filter);
         }
         catch(error){
             throw new Error(error);
@@ -19,7 +12,7 @@ class TeacherService {
     }
     static async addTeacher(body) {
         try{
-            const newTeacher = new TeacherDetails(body);
+            const newTeacher = new Teacher(body);           
             return await newTeacher.save();
         }
         catch(error){
@@ -29,7 +22,7 @@ class TeacherService {
     
     static async updateToken(details) {
         try{
-            return await TeacherDetails.updateOne(
+            return await Teacher.updateOne(
                 {_id: details._id},
                 {
                     $set: {

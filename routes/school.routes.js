@@ -1,9 +1,13 @@
 const schoolRoutes = require('express').Router();
-const SchoolController = require('../controllers/SchoolController');
+const AdminController = require('../controllers/AdminController');
+const SchoolController = require('../controllers/SchoolController')
 const { loginValidator } = require('../validators/SchoolValidator');
-const TeacherController = require('../controllers/TeacherController')
+const { newTeacherValidator } = require("../validators/TeacherValidator");
+const { schoolAuthValidate } = require('../middleware/AuthValidator');
+
 
 schoolRoutes.post('/login', loginValidator, SchoolController.login);
-schoolRoutes.post('/teacher_login', loginValidator, TeacherController.login);
+schoolRoutes.post('/teacher', schoolAuthValidate, newTeacherValidator, AdminController.addTeacher);
+schoolRoutes.post('/student', schoolAuthValidate, AdminController.addStudent);
 
 module.exports = schoolRoutes;
