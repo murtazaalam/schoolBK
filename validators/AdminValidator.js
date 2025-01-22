@@ -2,9 +2,9 @@ const { body, validationResult } = require("express-validator");
 
 exports.registerValidator = [
     body("name").notEmpty()
-                .withMessage("Name Is Required")
-                .isAlpha()
-                .withMessage("Invalid Name"),
+                .withMessage("Name Is Required"),
+                // .isAlpha()
+                // .withMessage("Invalid Name"),
     body("email").notEmpty()
                  .withMessage("Email Is Required")
                  .isEmail()
@@ -23,9 +23,7 @@ exports.registerValidator = [
 
 exports.loginValidator = [
     body("email").notEmpty()
-                 .withMessage("Email Is Required")
-                 .isEmail()
-                 .withMessage("Invalid Email"),
+                 .withMessage("Email Is Required"),
     body("password").notEmpty()
                     .withMessage("Password Is Required"),
     async(req, res, next) => {
