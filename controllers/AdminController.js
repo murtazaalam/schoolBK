@@ -5,37 +5,37 @@ const SchoolService = require("../services/SchoolService");
 
 class AdminController {
     static async register(req, res){
-        const { name, email, password } = req.body;
-        const lowerCaseEmail = email.toLowerCase();
-        const data = await AdminService.getAdmin({email: lowerCaseEmail});
-        if(data) return res.status(202).json({message: "Admin Already Exists", statusCode: 202});
-        const hashPassword = bcrypt.hashSync(password, 8);
-        const body = {
-            name,
-            email: lowerCaseEmail,
-            status: "active",
-            created_at: new Date(),
-            password: hashPassword,
-        }
         try{
+            const { name, email, password } = req.body;
+            const lowerCaseEmail = email.toLowerCase();
+            const data = await AdminService.getAdmin({email: lowerCaseEmail});
+            if(data) return res.status(202).json({message: "Admin Already Exists", statusCode: 202});
+            const hashPassword = bcrypt.hashSync(password, 8);
+            const body = {
+                name,
+                email: lowerCaseEmail,
+                status: "active",
+                created_at: new Date(),
+                password: hashPassword,
+            }
             await AdminService.addNewAdmin(body);
             return res.status(200).json({message: "Admin Registered", statusCode: 200})
         }
         catch(error){
-            console.log("Admin Registration Error: ", error);
+            return res.status(400).json({statusCode: 400, message:"Error: "+error, data: {}});
         }
     }
 
     static async login(req, res){
-        const { email, password } = req.body;
-        const lowerCaseEmail = email.toLowerCase();
-        const data = await AdminService.getAdmin({email: lowerCaseEmail});
-        if(!data) return res.status(404).json({message: "Admin Not Found", statusCode: 404});
-        if(data.status === "suspended") return res.status(400).json({message: "Admin Suspended", statusCode: 400});
-        const isPasswordValid = bcrypt.compareSync(password, data.password);
-        if(!isPasswordValid) return res.status(201).json({message:"Incorrect Password", statusCode: 201});
-        const token = jwtGenerator({_id: data._id});
         try{
+            const { email, password } = req.body;
+            const lowerCaseEmail = email.toLowerCase();
+            const data = await AdminService.getAdmin({email: lowerCaseEmail});
+            if(!data) return res.status(404).json({message: "Admin Not Found", statusCode: 404});
+            if(data.status === "suspended") return res.status(400).json({message: "Admin Suspended", statusCode: 400});
+            const isPasswordValid = bcrypt.compareSync(password, data.password);
+            if(!isPasswordValid) return res.status(201).json({message:"Incorrect Password", statusCode: 201});
+            const token = jwtGenerator({_id: data._id});
             await AdminService.updateToken({_id: data._id, token});
             const admin = {
                 _id: data._id,
@@ -47,7 +47,7 @@ class AdminController {
             return res.status(200).json({message: "Login Success", admin, token, statusCode: 200});
         }
         catch(error){
-            console.log("Admin Login Error: ", error);
+            return res.status(400).json({statusCode: 400, message:"Error: "+error, data: {}});
         }
     }
 
@@ -73,7 +73,7 @@ class AdminController {
             return res.status(200).json({message: "School Registered", statusCode: 200})
         }
         catch(error){
-            console.log("School Registration Error: ", error);
+            return res.status(400).json({statusCode: 400, message:"Error: "+error, data: {}});
         }
     }
 }
