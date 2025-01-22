@@ -2,18 +2,17 @@ const bcrypt = require("bcryptjs");
 const { jwtGenerator,jwtVerify } = require("../utils/jwt");
 const AdminService = require("../services/AdminService");
 const SchoolService = require("../services/SchoolService");
-const TeacherService = require("../services/TeacherService");
-const StudentService = require("../services/StudentService");
 
 class AdminController {
     static async register(req, res){
         const { name, email, password } = req.body;
-        const data = await AdminService.getAdmin({email});
-        if(data) return res.status(400).json({message: "Admin Already Exists", statusCode: 400});
+        const lowerCaseEmail = email.toLowerCase();
+        const data = await AdminService.getAdmin({email: lowerCaseEmail});
+        if(data) return res.status(202).json({message: "Admin Already Exists", statusCode: 202});
         const hashPassword = bcrypt.hashSync(password, 8);
         const body = {
             name,
-            email,
+            email: lowerCaseEmail,
             status: "active",
             created_at: new Date(),
             password: hashPassword,
@@ -29,7 +28,8 @@ class AdminController {
 
     static async login(req, res){
         const { email, password } = req.body;
-        const data = await AdminService.getAdmin({email});
+        const lowerCaseEmail = email.toLowerCase();
+        const data = await AdminService.getAdmin({email: lowerCaseEmail});
         if(!data) return res.status(404).json({message: "Admin Not Found", statusCode: 404});
         if(data.status === "suspended") return res.status(400).json({message: "Admin Suspended", statusCode: 400});
         const isPasswordValid = bcrypt.compareSync(password, data.password);
@@ -52,88 +52,28 @@ class AdminController {
     }
 
     static async addSchool(req, res){
-        const { phone, email, password } = req.body;
-        const data = await SchoolService.getSchool({$or: [{phone, email}]});
-        if(data) return res.status(400).json({message: "School Already Exists", statusCode: 400});
-        const hashPassword = bcrypt.hashSync(password, 8);
-        const body = {
-            name: req.body.name,
-            email: req.body.email,
-            phone: req.body.phone,
-            address: req.body.address,
-            city: req.body.city,
-            state: req.body.state,
-            status: "active",
-            created_at: new Date(),
-            password: hashPassword,
-        }
         try{
+            const { phone, email, password } = req.body;
+            const lowerCaseEmail = email.toLowerCase();
+            const data = await SchoolService.getSchool({$or: [{email: lowerCaseEmail}, {phone}]});
+            if(data) return res.status(202).json({message: "School Already Exists", statusCode: 202});
+            const hashPassword = bcrypt.hashSync(password, 8);
+            const body = {
+                name: req.body.name,
+                email: lowerCaseEmail,
+                phone: req.body.phone,
+                address: req.body.address,
+                city: req.body.city,
+                state: req.body.state,
+                status: "active",
+                created_at: new Date(),
+                password: hashPassword,
+            }
             await SchoolService.addSchool(body);
             return res.status(200).json({message: "School Registered", statusCode: 200})
         }
         catch(error){
             console.log("School Registration Error: ", error);
-        }
-    }
-    static async addTeacher(req,res){
-        const {phone, email, password} = req.body;
-        const token = req.headers.authorization;
-        let schoolId;
-        try {
-            const decodedToken = jwtVerify(token);
-            schoolId = decodedToken._id; 
-        } catch (error) {
-            return res.status(401).json({ message: "Invalid or Expired Token", statusCode: 401 });
-        }
-        const data = await TeacherService.getTeacher({$or: [{phone, email}]});
-        if(data) return res.status(400).json({message: "Teacher Already Exists", statusCode: 400});
-        const hashPassword = bcrypt.hashSync(password, 8);
-        const body = {
-            name: req.body.name,
-            email: req.body.email,
-            phone: req.body.phone,
-            address: req.body.address,
-            status: "active",
-            created_at: new Date(),
-            password: hashPassword,
-            school: schoolId
-        }
-        try{
-            await TeacherService.addTeacher(body);
-            return res.status(200).json({message: "Teacher Registered", statusCode: 200})
-        }
-        catch(error){
-            console.log("Teacher Registration Error: ", error);
-        }
-    }
-    static async addStudent(req,res){
-        const {phone, email, password} = req.body;
-        let schoolId;
-        try {
-            const decodedToken = jwtVerify(token);
-            schoolId = decodedToken._id; 
-        } catch (error) {
-            return res.status(401).json({ message: "Invalid or Expired Token", statusCode: 401 });
-        }
-        const data = await StudentService.getStudentDetails({$or: [{phone, email}]});
-        if(data) return res.status(400).json({message: "Teacher Already Exists", statusCode: 400});
-        const hashPassword = bcrypt.hashSync(password, 8);
-        const body = {
-            name: req.body.name,
-            email: req.body.email,
-            phone: req.body.phone,
-            address: req.body.address,
-            status: "active",
-            created_at: new Date(),
-            password: hashPassword,
-            school:schoolId,
-        }
-        try{
-            await StudentService.add(body);
-            return res.status(200).json({message: "Student Registered ", statusCode: 200})
-        }
-        catch(error){
-            console.log("Student Registration Error: ", error);
         }
     }
 }

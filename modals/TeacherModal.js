@@ -16,9 +16,9 @@ const TeacherDetails = new Schema({
         unique: true,
         required: false
     },
-    school:{
-        type: Schema.Types.ObjectId, 
-        ref: 'school', 
+    school_id: {
+        type: Schema.Types.ObjectId,
+        unique: false,
         required: true
     },
     address: {
@@ -34,8 +34,6 @@ const TeacherDetails = new Schema({
     },
     token:{
         type: String,
-        unique: true,
-        required: false,
         default: "",
     },
     password:{

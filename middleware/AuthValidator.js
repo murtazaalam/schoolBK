@@ -25,7 +25,7 @@ class AuthValidator{
             jwtVerify(token);
             const data = await SchoolService.getSchool({token});
             if(!data) return res.status(403).json({message: "Session Expired", data: {}, statusCode: 403});
-            req.admin = data;
+            req.school = data;
             next();
         }
         catch(error){
@@ -39,7 +39,7 @@ class AuthValidator{
             jwtVerify(token);
             const data = await TeacherService.getTeacher({token});
             if(!data) return res.status(403).json({message: "Session Expired", data: {}, statusCode: 403});
-            req.admin = data;
+            req.teacher = data;
             next();
         }
         catch(error){

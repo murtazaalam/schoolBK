@@ -1,9 +1,8 @@
-const school = require('../modals/SchoolModal');
-const StudentDetails = require('../modals/StudentModal');
+const Student = require('../modals/StudentModal');
 class StudentService {
     static async getStudent(filter) {
         try{
-            return await school.findOne(filter);
+            return await Student.findOne(filter);
         }
         catch(error){
             throw new Error(error);
@@ -11,7 +10,7 @@ class StudentService {
     }
     static async getStudentDetails(filter) {
         try{
-            return await StudentDetails.findOne(filter);
+            return await Student.findOne(filter);
         }
         catch(error){
             throw new Error(error);
@@ -19,7 +18,7 @@ class StudentService {
     }
     static async addStudent(body) {
         try{
-            const newStudent = new StudentDetails(body);
+            const newStudent = new Student(body);
             return await newStudent.save();
         }
         catch(error){
@@ -29,7 +28,7 @@ class StudentService {
     
     static async updateToken(details) {
         try{
-            return await StudentDetails.updateOne(
+            return await Student.updateOne(
                 {_id: details._id},
                 {
                     $set: {

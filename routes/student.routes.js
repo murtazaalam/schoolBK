@@ -1,6 +1,6 @@
 const studentRoutes = require('express').Router();
 const StudentController = require('../controllers/StudentController');
-const { loginValidator } = require('../validators/SchoolValidator');
+const { loginValidator } = require("../validators/FieldValidator");
 
 studentRoutes.post('/login', loginValidator, StudentController.login)
 

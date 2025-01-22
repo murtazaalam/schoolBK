@@ -1,7 +1,7 @@
 const adminRoutes = require('express').Router();
 const AdminController = require("../controllers/AdminController");
 const { adminAuthValidate } = require('../middleware/AuthValidator');
-const { newSchoolValidator } = require("../validators/SchoolValidator");
+const { newSchoolValidator } = require("../validators/FieldValidator");
 const { registerValidator, loginValidator } = require('../validators/AdminValidator');
 
 adminRoutes.post('/login', loginValidator, AdminController.login);

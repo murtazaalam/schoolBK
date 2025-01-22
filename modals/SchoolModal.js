@@ -40,8 +40,6 @@ const School = new Schema({
     },
     token:{
         type: String,
-        unique: true,
-        required: false,
         default: "",
     },
     password:{
