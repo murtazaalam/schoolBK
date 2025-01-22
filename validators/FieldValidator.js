@@ -11,12 +11,13 @@ exports.newSchoolValidator = [
     //              .withMessage("Invalid Email"),
     // body("phone").isMobilePhone("en-IN").withMessage("Invalid Phone Number"),
     body("email").notEmpty()
-                    .withMessage("Email Is Required")
-                    .isEmail()
-                    .withMessage("Invalid Email"),
+                 .withMessage("Email Is Required")
+                 .isEmail()
+                 .withMessage("Invalid Email"),
     body("phone").notEmpty()
-                    .withMessage("Name Is Required")
-                    .isMobilePhone("en-IN").withMessage("Invalid Phone Number"),
+                 .withMessage("Phone Is Required")
+                 .isMobilePhone("en-IN")
+                 .withMessage("Invalid Phone Number"),
     body("password").notEmpty()
                     .withMessage("Password Is Required")
                     .isStrongPassword()
@@ -37,8 +38,9 @@ exports.newTeacherValidator = [
                  .isEmail()
                  .withMessage("Invalid Email"),
     body("phone").notEmpty()
-                 .withMessage("Name Is Required")
-                 .isMobilePhone("en-IN").withMessage("Invalid Phone Number"),
+                 .withMessage("Phone Is Required")
+                 .isMobilePhone("en-IN")
+                 .withMessage("Invalid Phone Number"),
     body("password").notEmpty()
                     .withMessage("Password Is Required")
                     .isStrongPassword()
@@ -59,8 +61,9 @@ exports.newStudentValidator = [
                  .isEmail()
                  .withMessage("Invalid Email"),
     body("phone").notEmpty()
-                 .withMessage("Name Is Required")
-                 .isMobilePhone("en-IN").withMessage("Invalid Phone Number"),
+                 .withMessage("Phone Is Required")
+                 .isMobilePhone("en-IN")
+                 .withMessage("Invalid Phone Number"),
     body("password").notEmpty()
                     .withMessage("Password Is Required")
                     .isStrongPassword()
@@ -76,12 +79,9 @@ exports.newStudentValidator = [
 exports.loginValidator = [
     oneOf([
         body("email").notEmpty()
-                     .withMessage("Email Is Required")
-                     .isEmail()
-                     .withMessage("Invalid Email"),
+                     .withMessage("Email Is Required"),
         body("phone").notEmpty()
-                     .withMessage("Name Is Required")
-                     .isMobilePhone("en-IN").withMessage("Invalid Phone Number")
+                     .withMessage("Phone Is Required")
     ]),
     body("password").notEmpty()
                     .withMessage("Password Is Required"),
