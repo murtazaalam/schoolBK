@@ -8,9 +8,18 @@ class StudentService {
             throw new Error(error);
         }
     }
-    static async getStudentDetails(filter) {
+    static async updateStudent(id,updateFields){
         try{
-            return await Student.findOne(filter);
+            return await Student.updateMany({_id: id },{$set: updateFields});
+        }
+        catch(error){
+            throw new Error(error);
+        }
+    
+    }
+    static async deleteStudent(id){
+        try{
+            return await Student.deleteOne({_id:id});
         }
         catch(error){
             throw new Error(error);

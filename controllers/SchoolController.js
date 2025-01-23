@@ -3,6 +3,7 @@ const { jwtGenerator } = require("../utils/jwt");
 const SchoolService = require('../services/SchoolService');
 const TeacherService = require('../services/TeacherService');
 const StudentService = require("../services/StudentService");
+const StaffService = require('../services/StaffService');
 
 class SchoolController {
     static async login(req, res){
@@ -57,6 +58,66 @@ class SchoolController {
             return res.status(400).json({statusCode: 400, message:"Error: "+error, data: {}});
         }
     }
+    static async updateTeacher(req, res) {
+        try {
+            const { id } = req.params; 
+            const { phone, email, password, ...updateFields } = req.body;
+    
+            const student = await TeacherService.getTeacher({ _id: id });
+            if (!student) {
+                return res.status(404).json({ message: "Teacher Not Found", statusCode: 404 });
+            }
+
+            if (email || phone) {
+                const existingStudent = await TeacherService.getTeacher({
+                    $and: [
+                        { _id: { $ne: id } },
+                        { $or: [{ email: email?.toLowerCase() }, { phone }] }
+                    ]
+                });
+                if (existingStudent) {
+                    return res.status(409).json({ message: "Email or Phone Already Exists", statusCode: 409 });
+                }
+            }
+    
+            if (password) {
+                updateFields.password = bcrypt.hashSync(password, 8);
+            }
+    
+            if (email) updateFields.email = email.toLowerCase();
+
+            if (Object.keys(updateFields).length > 0) {
+                await TeacherService.updateTeacher(id, updateFields);
+                return res.status(200).json({ message: "Teacher Updated Successfully", statusCode: 200 });
+            }
+  
+            return res.status(400).json({
+                message: "No valid fields provided to update",
+                statusCode: 400
+            });
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ statusCode: 500, message: "Error: " + error.message });
+        }
+    }
+    
+    static async deleteTeacher(req, res) {
+        try {
+            const { id } = req.params; 
+            
+            const teacher = await TeacherService.getTeacher({ _id: id });
+
+            if (!teacher) {
+                return res.status(404).json({ message: "Teacher Not Found", statusCode: 404 });
+            }
+
+            await TeacherService.updateTeacher(id, { status: "inactive" });
+            return res.status(200).json({ message: "Teacher Deleted Successfully", statusCode: 200 });
+        } catch (error) {
+            return res.status(400).json({ statusCode: 400, message: "Error: " + error, data: {} });
+        }
+    }
+    
 
     static async addStudent(req,res){
         try{
@@ -82,5 +143,148 @@ class SchoolController {
             return res.status(400).json({statusCode: 400, message:"Error: "+error, data: {}});
         }
     }
+    static async updateStudent(req, res) {
+        try {
+            const { id } = req.params; 
+            const { phone, email, password, ...updateFields } = req.body;
+    
+            const student = await StudentService.getStudent({ _id: id });
+            if (!student) {
+                return res.status(404).json({ message: "Student Not Found", statusCode: 404 });
+            }
+
+            if (email || phone) {
+                const existingStudent = await StudentService.getStudent({
+                    $and: [
+                        { _id: { $ne: id } },
+                        { $or: [{ email: email?.toLowerCase() }, { phone }] }
+                    ]
+                });
+                if (existingStudent) {
+                    return res.status(409).json({ message: "Email or Phone Already Exists", statusCode: 409 });
+                }
+            }
+    
+            if (password) {
+                updateFields.password = bcrypt.hashSync(password, 8);
+            }
+    
+            if (email) updateFields.email = email.toLowerCase();
+
+            if (Object.keys(updateFields).length > 0) {
+                await StudentService.updateStudent(id, updateFields);
+                return res.status(200).json({ message: "Student Updated Successfully", statusCode: 200 });
+            }
+  
+            return res.status(400).json({
+                message: "No valid fields provided to update",
+                statusCode: 400
+            });
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ statusCode: 500, message: "Error: " + error.message });
+        }
+    }
+    
+    static async deleteStudent(req, res) {
+        try {
+            const { id } = req.params; 
+    
+            const student = await StudentService.getStudent({ _id: id });
+            if (!student) {
+                return res.status(404).json({ message: "Student Not Found", statusCode: 404 });
+            }
+    
+            await StudentService.updateStudent(id, { status: "inactive" });
+            return res.status(200).json({ message: "Student Deleted Successfully", statusCode: 200 });
+        } catch (error) {
+            return res.status(400).json({ statusCode: 400, message: "Error: " + error, data: {} });
+        }
+    }
+    static async addStaff(req,res){
+        try{
+            const {phone, email, password} = req.body;
+            const lowerCaseEmail = email.toLowerCase();
+            const data = await StaffService.getStaff({$or: [{email: lowerCaseEmail}, {phone}]});
+            if(data) return res.status(202).json({message: "Staff Already Exists", statusCode: 202});
+            const hashPassword = bcrypt.hashSync(password, 8);
+            const body = {
+                name: req.body.name,
+                email: lowerCaseEmail,
+                phone: req.body.phone,
+                address: req.body.address,
+                status: "active",
+                created_at: new Date(),
+                password: hashPassword,
+                school_id: req.school._id,
+            }
+            await StaffService.addStaff(body);
+            return res.status(200).json({message: "Staff Registered ", statusCode: 200})
+        }
+        catch(error){
+            return res.status(400).json({statusCode: 400, message:"Error: "+error, data: {}});
+        }
+    }
+    static async updateStaff(req, res) {
+        try {
+            const { id } = req.params; 
+            const { phone, email, password, ...updateFields } = req.body;
+    
+            const staff = await StaffService.getStaff({ _id: id });
+            if (!staff) {
+                return res.status(404).json({ message: "Staff Not Found", statusCode: 404 });
+            }
+
+            if (email || phone) {
+                const existingStaff = await StaffService.getStaff({
+                    $and: [
+                        { _id: { $ne: id } },
+                        { $or: [{ email: email?.toLowerCase() }, { phone }] }
+                    ]
+                });
+                if (existingStaff) {
+                    return res.status(409).json({ message: "Email or Phone Already Exists", statusCode: 409 });
+                }
+            }
+    
+            if (password) {
+                updateFields.password = bcrypt.hashSync(password, 8);
+            }
+    
+            if (email) updateFields.email = email.toLowerCase();
+
+            if (Object.keys(updateFields).length > 0) {
+                await StaffService.updateStaff(id, updateFields);
+                return res.status(200).json({ message: "Staff Updated Successfully", statusCode: 200 });
+            }
+  
+            return res.status(400).json({
+                message: "No valid fields provided to update",
+                statusCode: 400
+            });
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ statusCode: 500, message: "Error: " + error.message });
+        }
+    }
+       
+    static async deleteStaff(req, res) {
+        try {
+            const { id } = req.params; 
+    
+            const student = await StaffService.getStaff({_id:id});
+
+            if (!student) {
+                return res.status(404).json({ message: "Staff Not Found", statusCode: 404 });
+            }
+    
+            await StaffService.updateStaff(id, { status: "inactive" });
+            return res.status(200).json({ message: "Staff Deleted Successfully", statusCode: 200 });
+        } catch (error) {
+            return res.status(400).json({ statusCode: 400, message: "Error: " + error, data: {} });
+        }
+    }
+    
+    
 }
 module.exports = SchoolController;

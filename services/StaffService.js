@@ -1,36 +1,35 @@
-const school = require('../modals/SchoolModal');
-const Teacher = require('../modals/TeacherModal');
-class TeacherService {
+const Staff = require('../modals/StaffModal');
+class StaffService {
     
-    static async getTeacher(filter) {
+    static async getStaff(filter) {
         try{
-            return await Teacher.findOne(filter);
+            return await Staff.findOne(filter);
         }
         catch(error){
             throw new Error(error);
         }
     }
-    static async addTeacher(body) {
+    static async addStaff(body) {
         try{
-            const newTeacher = new Teacher(body);           
-            return await newTeacher.save();
+            const newStaff = new Staff(body);           
+            return await newStaff.save();
         }
         catch(error){
             throw new Error(error);
         }
     }
-    static async updateTeacher(id,updateFields){
+    static async updateStaff(id,updateFields){
         try{
-            return await Teacher.updateMany({_id: id },{$set: updateFields});
+            return await Staff.updateMany({_id: id },{$set: updateFields});
         }
         catch(error){
             throw new Error(error);
         }
 
     }
-    static async deleteTeacher(id){
+    static async deleteStaff(id){
         try{
-            return await Teacher.deleteOne({_id: id});
+            return await Staff.deleteOne({_id: id});
         }
         catch(error){
             throw new Error(error)
@@ -39,7 +38,7 @@ class TeacherService {
     
     static async updateToken(details) {
         try{
-            return await Teacher.updateOne(
+            return await Staff.updateOne(
                 {_id: details._id},
                 {
                     $set: {
@@ -53,4 +52,4 @@ class TeacherService {
         }
     }
 }
-module.exports = TeacherService;
+module.exports = StaffService;
