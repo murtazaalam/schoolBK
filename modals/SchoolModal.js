@@ -35,7 +35,7 @@ const School = new Schema({
     status: {
         type: String,
         unique: false,
-        default: null,
+        default: "active",
         required: false
     },
     token:{
@@ -46,6 +46,12 @@ const School = new Schema({
         type: String,
         unique: false,
         required: true
+    },
+    updated_at:{
+        type: Date,
+        unique: false,
+        required: false,
+        default: new Date()
     },
     created_at:{
         type: Date,

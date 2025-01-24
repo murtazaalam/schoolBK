@@ -8,9 +8,9 @@ class StudentService {
             throw new Error(error);
         }
     }
-    static async updateStudent(id,updateFields){
+    static async updateStudent(id, updateFields){
         try{
-            return await Student.updateMany({_id: id },{$set: updateFields});
+            return await Student.updateOne({_id: id }, {$set: updateFields});
         }
         catch(error){
             throw new Error(error);
@@ -19,7 +19,7 @@ class StudentService {
     }
     static async deleteStudent(id){
         try{
-            return await Student.deleteOne({_id:id});
+            return await Student.deleteOne({_id: id});
         }
         catch(error){
             throw new Error(error);

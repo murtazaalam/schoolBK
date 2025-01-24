@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-const TeacherDetails = new Schema({
+
+const Teacher = new Schema({
     name: {
         type: String,
         unique: false,
@@ -29,7 +30,7 @@ const TeacherDetails = new Schema({
     status: {
         type: String,
         unique: false,
-        default: null,
+        default: "active",
         required: false
     },
     token:{
@@ -41,12 +42,18 @@ const TeacherDetails = new Schema({
         unique: false,
         required: true
     },
+    updated_at:{
+        type: Date,
+        unique: false,
+        required: false,
+        default: new Date()
+    },
     created_at:{
         type: Date,
         unique: false,
         required: false,
-        default: new Date,
+        default: new Date(),
     }
 })
 
-module.exports = mongoose.model('teacher', TeacherDetails);
+module.exports = mongoose.model('teacher', Teacher);

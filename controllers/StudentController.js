@@ -7,12 +7,17 @@ class StudentController {
         try{
             const { phone, email, password } = req.body;
             const lowerCaseEmail = email ? email.toLowerCase() : null;
+            
             const data = await StudentService.getStudent({$or: [{email: lowerCaseEmail}, {phone}]});
+            
             if(!data) return res.status(404).json({message: "Student Not Found", data: {}, statusCode: 404});
             const isPasswordValid = bcrypt.compareSync(password, data.password);
+            
             if(!isPasswordValid) return res.status(201).json({message:"Incorrect Password", statusCode: 201});
+            
             const token = jwtGenerator({_id: data._id});
             await StudentService.updateToken({_id: data._id, token});
+            
             const student = {
                 _id: data._id,
                 name: data.name,
@@ -21,7 +26,8 @@ class StudentController {
                 status: data.status,
                 address: data.address,
                 school_id: data.school_id,
-                created_at: data.created_at
+                created_at: data.created_at,
+                updated_at: data.updated_at
             }
             return res.status(200).json({message: "Login Success", data: student, token, statusCode: 200});
         }

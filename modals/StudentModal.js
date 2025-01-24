@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+
 const Student = new Schema({
     name: {
         type: String,
@@ -29,7 +30,7 @@ const Student = new Schema({
     status: {
         type: String,
         unique: false,
-        default: null,
+        default: "active",
         required: false
     },
     token:{
@@ -41,16 +42,17 @@ const Student = new Schema({
         unique: false,
         required: true
     },
+    updated_at:{
+        type: Date,
+        unique: false,
+        required: false,
+        default: new Date()
+    },
     created_at:{
         type: Date,
         unique: false,
         required: false,
-        default: new Date,
-    },
-    updated_at:{
-        type: Date,
-        unique: false,
-        required: false,    
+        default: new Date(),
     }
 })
 

@@ -10,12 +10,18 @@ class SchoolController {
         try{
             const { phone, email, password } = req.body;
             const lowerCaseEmail = email ? email.toLowerCase() : null;
+
             const data = await SchoolService.getSchool({$or: [{email: lowerCaseEmail}, {phone}]});
+
             if(!data) return res.status(404).json({message: "School Not Found", data: {}, statusCode: 404});
+            
             const isPasswordValid = bcrypt.compareSync(password, data.password);
+
             if(!isPasswordValid) return res.status(201).json({message:"Incorrect Password", statusCode: 201});
+            
             const token = jwtGenerator({_id: data._id});
             await SchoolService.updateToken({_id: data._id, token});
+
             const school = {
                 _id: data._id,
                 name: data.name,
@@ -25,7 +31,8 @@ class SchoolController {
                 state: data.state,
                 status: data.status,
                 address: data.address,
-                created_at: data.created_at
+                created_at: data.created_at,
+                updated_at: data.updated_at
             }
             return res.status(200).json({message: "Login Success", data: school, token, statusCode: 200});
         }
@@ -33,24 +40,25 @@ class SchoolController {
             return res.status(400).json({statusCode: 400, message:"Error: "+error, data: {}});
         }
     }
-
     static async addTeacher(req,res){
         try{
             const {phone, email, password} = req.body;
             const lowerCaseEmail = email.toLowerCase();
+
             const data = await TeacherService.getTeacher({$or: [{email: lowerCaseEmail}, {phone}]});
+            
             if(data) return res.status(202).json({message: "Teacher Already Exists", statusCode: 202});
+            
             const hashPassword = bcrypt.hashSync(password, 8);
             const body = {
                 name: req.body.name,
                 email: lowerCaseEmail,
                 phone: req.body.phone,
                 address: req.body.address,
-                status: "active",
-                created_at: new Date(),
                 password: hashPassword,
                 school_id: req.school._id
             }
+            
             await TeacherService.addTeacher(body);
             return res.status(200).json({message: "Teacher Registered", statusCode: 200})
         }
@@ -60,13 +68,11 @@ class SchoolController {
     }
     static async updateTeacher(req, res) {
         try {
-            const { id } = req.params; 
+            const { id } = req.params;
             const { phone, email, password, ...updateFields } = req.body;
     
-            const student = await TeacherService.getTeacher({ _id: id });
-            if (!student) {
-                return res.status(404).json({ message: "Teacher Not Found", statusCode: 404 });
-            }
+            const data = await TeacherService.getTeacher({ _id: id });
+            if (!data) return res.status(404).json({ message: "Teacher Not Found", statusCode: 404 });
 
             if (email || phone) {
                 const existingStudent = await TeacherService.getTeacher({
@@ -75,50 +81,40 @@ class SchoolController {
                         { $or: [{ email: email?.toLowerCase() }, { phone }] }
                     ]
                 });
-                if (existingStudent) {
-                    return res.status(409).json({ message: "Email or Phone Already Exists", statusCode: 409 });
-                }
+                if (existingStudent) return res.status(409).json({ message: "Email or Phone Already Exists", statusCode: 409 });
             }
     
-            if (password) {
-                updateFields.password = bcrypt.hashSync(password, 8);
-            }
-    
+            if (password) updateFields.password = bcrypt.hashSync(password, 8);
             if (email) updateFields.email = email.toLowerCase();
 
             if (Object.keys(updateFields).length > 0) {
+                updateFields.updated_at = new Date();
                 await TeacherService.updateTeacher(id, updateFields);
                 return res.status(200).json({ message: "Teacher Updated Successfully", statusCode: 200 });
             }
-  
-            return res.status(400).json({
-                message: "No valid fields provided to update",
-                statusCode: 400
-            });
-        } catch (error) {
-            console.error(error);
-            return res.status(500).json({ statusCode: 500, message: "Error: " + error.message });
+            return res.status(400).json({message: "No valid fields provided to update", statusCode: 400});
+        }
+        catch (error) {
+            return res.status(500).json({ statusCode: 500, message: "Error: " + error, data: {} });
         }
     }
-    
     static async deleteTeacher(req, res) {
         try {
             const { id } = req.params; 
-            
-            const teacher = await TeacherService.getTeacher({ _id: id });
+            const data = await TeacherService.getTeacher({ _id: id });
 
-            if (!teacher) {
-                return res.status(404).json({ message: "Teacher Not Found", statusCode: 404 });
+            if (!data) return res.status(404).json({ message: "Teacher Not Found", statusCode: 404 });
+            const body = {
+                status: "deleted",
+                updated_at: new Date()
             }
-
-            await TeacherService.updateTeacher(id, { status: "inactive" });
+            await TeacherService.updateTeacher(id, body);
             return res.status(200).json({ message: "Teacher Deleted Successfully", statusCode: 200 });
-        } catch (error) {
+        }
+        catch (error) {
             return res.status(400).json({ statusCode: 400, message: "Error: " + error, data: {} });
         }
     }
-    
-
     static async addStudent(req,res){
         try{
             const {phone, email, password} = req.body;
@@ -131,8 +127,6 @@ class SchoolController {
                 email: lowerCaseEmail,
                 phone: req.body.phone,
                 address: req.body.address,
-                status: "active",
-                created_at: new Date(),
                 password: hashPassword,
                 school_id: req.school._id,
             }
@@ -145,13 +139,11 @@ class SchoolController {
     }
     static async updateStudent(req, res) {
         try {
-            const { id } = req.params; 
+            const { id } = req.params;
             const { phone, email, password, ...updateFields } = req.body;
     
-            const student = await StudentService.getStudent({ _id: id });
-            if (!student) {
-                return res.status(404).json({ message: "Student Not Found", statusCode: 404 });
-            }
+            const data = await StudentService.getStudent({ _id: id });
+            if (!data) return res.status(404).json({ message: "Student Not Found", statusCode: 404 });
 
             if (email || phone) {
                 const existingStudent = await StudentService.getStudent({
@@ -160,44 +152,39 @@ class SchoolController {
                         { $or: [{ email: email?.toLowerCase() }, { phone }] }
                     ]
                 });
-                if (existingStudent) {
-                    return res.status(409).json({ message: "Email or Phone Already Exists", statusCode: 409 });
-                }
+                if (existingStudent) return res.status(409).json({ message: "Email or Phone Already Exists", statusCode: 409 });
             }
     
-            if (password) {
-                updateFields.password = bcrypt.hashSync(password, 8);
-            }
-    
+            if (password) updateFields.password = bcrypt.hashSync(password, 8);
             if (email) updateFields.email = email.toLowerCase();
 
             if (Object.keys(updateFields).length > 0) {
+                updateFields.updated_at = new Date();
                 await StudentService.updateStudent(id, updateFields);
                 return res.status(200).json({ message: "Student Updated Successfully", statusCode: 200 });
             }
-  
-            return res.status(400).json({
-                message: "No valid fields provided to update",
-                statusCode: 400
-            });
-        } catch (error) {
-            console.error(error);
-            return res.status(500).json({ statusCode: 500, message: "Error: " + error.message });
+            return res.status(400).json({message: "No valid fields provided to update", statusCode: 400});
+        }
+        catch (error) {
+            return res.status(500).json({ statusCode: 500, message: "Error: " + error, data: {} });
         }
     }
-    
     static async deleteStudent(req, res) {
         try {
-            const { id } = req.params; 
+            const { id } = req.params;
+            const data = await StudentService.getStudent({ _id: id });
+
+            if (!data) return res.status(404).json({ message: "Student Not Found", statusCode: 404 });
     
-            const student = await StudentService.getStudent({ _id: id });
-            if (!student) {
-                return res.status(404).json({ message: "Student Not Found", statusCode: 404 });
+            const body = {
+                status: "deleted",
+                updated_at: new Date()
             }
-    
-            await StudentService.updateStudent(id, { status: "inactive" });
+
+            await StudentService.updateStudent(id, body);
             return res.status(200).json({ message: "Student Deleted Successfully", statusCode: 200 });
-        } catch (error) {
+        }
+        catch (error) {
             return res.status(400).json({ statusCode: 400, message: "Error: " + error, data: {} });
         }
     }
@@ -213,8 +200,6 @@ class SchoolController {
                 email: lowerCaseEmail,
                 phone: req.body.phone,
                 address: req.body.address,
-                status: "active",
-                created_at: new Date(),
                 password: hashPassword,
                 school_id: req.school._id,
             }
@@ -222,18 +207,16 @@ class SchoolController {
             return res.status(200).json({message: "Staff Registered ", statusCode: 200})
         }
         catch(error){
-            return res.status(400).json({statusCode: 400, message:"Error: "+error, data: {}});
+            return res.status(400).json({statusCode: 400, message:"Error: " + error, data: {}});
         }
     }
     static async updateStaff(req, res) {
         try {
-            const { id } = req.params; 
+            const { id } = req.params;
             const { phone, email, password, ...updateFields } = req.body;
     
-            const staff = await StaffService.getStaff({ _id: id });
-            if (!staff) {
-                return res.status(404).json({ message: "Staff Not Found", statusCode: 404 });
-            }
+            const data = await StaffService.getStaff({ _id: id });
+            if (!data) return res.status(404).json({ message: "Staff Not Found", statusCode: 404 });
 
             if (email || phone) {
                 const existingStaff = await StaffService.getStaff({
@@ -242,49 +225,41 @@ class SchoolController {
                         { $or: [{ email: email?.toLowerCase() }, { phone }] }
                     ]
                 });
-                if (existingStaff) {
-                    return res.status(409).json({ message: "Email or Phone Already Exists", statusCode: 409 });
-                }
+                if (existingStaff) return res.status(409).json({ message: "Email or Phone Already Exists", statusCode: 409 });
             }
     
-            if (password) {
-                updateFields.password = bcrypt.hashSync(password, 8);
-            }
-    
+            if (password) updateFields.password = bcrypt.hashSync(password, 8);
             if (email) updateFields.email = email.toLowerCase();
 
             if (Object.keys(updateFields).length > 0) {
+                updateFields.updated_at = new Date();
                 await StaffService.updateStaff(id, updateFields);
                 return res.status(200).json({ message: "Staff Updated Successfully", statusCode: 200 });
             }
-  
-            return res.status(400).json({
-                message: "No valid fields provided to update",
-                statusCode: 400
-            });
-        } catch (error) {
-            console.error(error);
-            return res.status(500).json({ statusCode: 500, message: "Error: " + error.message });
+            return res.status(400).json({message: "No valid fields provided to update", statusCode: 400});
+        }
+        catch (error) {
+            return res.status(500).json({ statusCode: 500, message: "Error: " + error, data: {} });
         }
     }
-       
     static async deleteStaff(req, res) {
         try {
-            const { id } = req.params; 
-    
-            const student = await StaffService.getStaff({_id:id});
+            const { id } = req.params;
+            const data = await StaffService.getStaff({_id: id});
 
-            if (!student) {
-                return res.status(404).json({ message: "Staff Not Found", statusCode: 404 });
-            }
+            if (!data) return res.status(404).json({ message: "Staff Not Found", statusCode: 404 });
     
-            await StaffService.updateStaff(id, { status: "inactive" });
+            const body = {
+                status: "deleted",
+                updated_at: new Date()
+            }
+
+            await StaffService.updateStaff(id, body);
             return res.status(200).json({ message: "Staff Deleted Successfully", statusCode: 200 });
-        } catch (error) {
+        }
+        catch (error) {
             return res.status(400).json({ statusCode: 400, message: "Error: " + error, data: {} });
         }
     }
-    
-    
 }
 module.exports = SchoolController;

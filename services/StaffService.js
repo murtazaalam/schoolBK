@@ -20,7 +20,7 @@ class StaffService {
     }
     static async updateStaff(id,updateFields){
         try{
-            return await Staff.updateMany({_id: id },{$set: updateFields});
+            return await Staff.updateOne({_id: id },{$set: updateFields});
         }
         catch(error){
             throw new Error(error);

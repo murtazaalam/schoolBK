@@ -1,7 +1,5 @@
-const school = require('../modals/SchoolModal');
 const Teacher = require('../modals/TeacherModal');
 class TeacherService {
-    
     static async getTeacher(filter) {
         try{
             return await Teacher.findOne(filter);
@@ -19,9 +17,9 @@ class TeacherService {
             throw new Error(error);
         }
     }
-    static async updateTeacher(id,updateFields){
+    static async updateTeacher(id, updateFields){
         try{
-            return await Teacher.updateMany({_id: id },{$set: updateFields});
+            return await Teacher.updateOne({_id: id }, {$set: updateFields});
         }
         catch(error){
             throw new Error(error);
