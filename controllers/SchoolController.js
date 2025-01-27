@@ -4,6 +4,9 @@ const SchoolService = require('../services/SchoolService');
 const TeacherService = require('../services/TeacherService');
 const StudentService = require("../services/StudentService");
 const StaffService = require('../services/StaffService');
+const { applySearchFilter, applySorting, applyPagination } = require('../utils/commonUtils');
+const Teacher = require('../modals/TeacherModal');
+
 
 class SchoolController {
     static async login(req, res){
@@ -115,6 +118,57 @@ class SchoolController {
             return res.status(400).json({ statusCode: 400, message: "Error: " + error, data: {} });
         }
     }
+    static async getTeachers(req, res) {
+        try {
+            const school = req.school;
+            const schoolId = school._id;
+            if (!schoolId) {
+                return res.status(400).json({
+                    message: "School ID is missing in the session",
+                    statusCode: 400,
+                });
+            }
+
+            const { page = 1, limit = 10, search = "", sort = "name", order = "asc" } = req.query;
+
+            let query = { school_id: schoolId };
+
+            query = applySearchFilter(query, search, ["name", "email", "status"]); 
+
+            const { skip, limit: pageLimit } = applyPagination(page, limit);
+            const sortCriteria = applySorting(sort, order);
+
+            const teachers = await Teacher.find(query).sort(sortCriteria).skip(skip).limit(pageLimit);
+
+            const totalCount = await Teacher.countDocuments(query);
+    
+            if (!teachers || teachers.length === 0) {
+                return res.status(404).json({
+                    message: "No teachers found for the given school ID",
+                    statusCode: 404,
+                    data: [],
+                });
+            }
+    
+            return res.status(200).json({
+                message: "Teachers retrieved successfully",
+                statusCode: 200,
+                data: teachers,
+                meta: {
+                    totalCount, 
+                    currentPage: Number(page), 
+                    totalPages: Math.ceil(totalCount / limit), 
+                },
+            });
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({
+                statusCode: 500,
+                message: "Error: " + error.message,
+            });
+        }
+    }
+    
     static async addStudent(req,res){
         try{
             const {phone, email, password} = req.body;

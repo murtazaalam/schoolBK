@@ -8,6 +8,15 @@ class TeacherService {
             throw new Error(error);
         }
     }
+    static async getTeachersBySchool(schoolId) {
+        try {
+            return await Teacher.find({ school_id: schoolId });
+
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
+    
     static async addTeacher(body) {
         try{
             const newTeacher = new Teacher(body);           
