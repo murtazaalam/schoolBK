@@ -6,7 +6,6 @@ const TeacherService = require('../services/TeacherService');
 const StudentService = require("../services/StudentService");
 const { applySearchFilter, applySorting, applyPagination } = require('../utils/filters');
 
-
 class SchoolController {
     static async login(req, res){
         try{
@@ -157,7 +156,6 @@ class SchoolController {
             return res.status(400).json({statusCode: 400, message: "Error: " + error});
         }
     }
-    
     static async addStudent(req,res){
         try{
             const {phone, email, password} = req.body;

@@ -10,6 +10,7 @@ console.log('Starting application...');
 const start = Date.now();
 
 const connect = require("./config/db.config");
+
 const adminRoutes = require("./routes/admin.routes");
 const schoolRoutes = require("./routes/school.routes");
 const studentRoutes = require("./routes/student.routes");
