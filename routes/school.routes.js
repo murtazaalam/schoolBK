@@ -8,7 +8,7 @@ schoolRoutes.post('/login', loginValidator, SchoolController.login);
 schoolRoutes.post('/teacher', schoolAuthValidate, newTeacherValidator, SchoolController.addTeacher);
 schoolRoutes.put('/teacher/:id', schoolAuthValidate, newTeacherValidator, SchoolController.updateTeacher);
 schoolRoutes.delete('/teacher/:id', schoolAuthValidate, SchoolController.deleteTeacher);
-schoolRoutes.get('/teacher', schoolAuthValidate, SchoolController.getTeachers);
+schoolRoutes.get('/teacher', schoolAuthValidate, SchoolController.getAllTeachers);
 
 schoolRoutes.post('/student', schoolAuthValidate, newStudentValidator, SchoolController.addStudent);
 schoolRoutes.put('/student/:id', schoolAuthValidate, newStudentValidator, SchoolController.updateStudent);

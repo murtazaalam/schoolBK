@@ -8,11 +8,26 @@ class TeacherService {
             throw new Error(error);
         }
     }
-    static async getTeachersBySchool(schoolId) {
-        try {
-            return await Teacher.find({ school_id: schoolId });
+    static async getAllTeachers(filter, sortKey, skip, limit) {
+        try{
+            return await Teacher.find(
+                filter,
+                ["-password", "-token"]
+            ).sort(sortKey).skip(skip).limit(limit);
+        }
+        catch (error) {
+            throw new Error(error);
+        }
+    }
 
-        } catch (error) {
+    static async getTeachersCount(filter) {
+        try{
+            return await Teacher.aggregate([
+                {$match: filter},
+                {$count: 'totalCount'}
+            ])
+        }
+        catch (error) {
             throw new Error(error);
         }
     }
