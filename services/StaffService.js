@@ -9,6 +9,29 @@ class StaffService {
             throw new Error(error);
         }
     }
+    static async getAllStaff(filter,sortKey,limit,skip){
+        try{
+            return await Staff.find(
+                filter,
+                ["-password", "-token"]
+            ).sort(sortKey).skip(skip).limit(limit);
+        }
+        catch(error){
+            throw new Error(error);
+        }
+    
+    }
+    static async getStaffsCount(filter) {
+        try{
+            return await Staff.aggregate([
+                {$match: filter},
+                {$count: 'totalCount'}
+            ])
+        }
+        catch (error) {
+            throw new Error(error);
+        }
+    }
     static async addStaff(body) {
         try{
             const newStaff = new Staff(body);           

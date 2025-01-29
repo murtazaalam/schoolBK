@@ -229,6 +229,46 @@ class SchoolController {
             return res.status(400).json({ statusCode: 400, message: "Error: " + error, data: {} });
         }
     }
+    static async getAllStudents(req, res) {
+        try {
+            const schoolId = req.school._id;
+            if (!schoolId) return res.status(400).json({message: "School ID is missing in the session", statusCode: 400});
+
+            const { page = 1, limit = 10, searchText = "", sort = "_id", order = "desc" } = req.query;
+
+            let filter = { school_id: schoolId, status: "active" };
+            filter = applySearchFilter(filter, searchText, ["name", "email"]);
+
+            const { skip, limit: pageLimit } = applyPagination(page, limit);
+            const sortKey = applySorting(sort, order);
+
+            let totalCount = await StudentService.getStudentCount(filter);
+            totalCount.length > 0 ? (totalCount = totalCount[0].totalCount) : (totalCount = 0)
+            
+            const student = await StudentService.getAllStudent(filter, sortKey, skip, pageLimit);
+
+            if (!student || student.length === 0) {
+                return res.status(404).json({
+                    message: "No students found",
+                    statusCode: 404,
+                    data: [],
+                });
+            }
+            return res.status(200).json({
+                message: "Students retrieved successfully",
+                statusCode: 200,
+                data: student,
+                meta: {
+                    totalCount,
+                    currentPage: Number(page),
+                    totalPages: Math.ceil(totalCount / limit),
+                },
+            });
+        }
+        catch (error) {
+            return res.status(400).json({statusCode: 400, message: "Error: " + error});
+        }
+    }
     static async addStaff(req,res){
         try{
             const {phone, email, password} = req.body;
@@ -300,6 +340,46 @@ class SchoolController {
         }
         catch (error) {
             return res.status(400).json({ statusCode: 400, message: "Error: " + error, data: {} });
+        }
+    }
+    static async getAllStaffs(req, res) {
+        try {
+            const schoolId = req.school._id;
+            if (!schoolId) return res.status(400).json({message: "School ID is missing in the session", statusCode: 400});
+
+            const { page = 1, limit = 10, searchText = "", sort = "_id", order = "desc" } = req.query;
+
+            let filter = { school_id: schoolId, status: "active" };
+            filter = applySearchFilter(filter, searchText, ["name", "email"]);
+
+            const { skip, limit: pageLimit } = applyPagination(page, limit);
+            const sortKey = applySorting(sort, order);
+
+            let totalCount = await StaffService.getStaffsCount(filter);
+            totalCount.length > 0 ? (totalCount = totalCount[0].totalCount) : (totalCount = 0)
+            
+            const staff = await StaffService.getAllStaff(filter, sortKey, skip, pageLimit);
+
+            if (!student || student.length === 0) {
+                return res.status(404).json({
+                    message: "No staff found",
+                    statusCode: 404,
+                    data: [],
+                });
+            }
+            return res.status(200).json({
+                message: "Staffs retrieved successfully",
+                statusCode: 200,
+                data: staff,
+                meta: {
+                    totalCount,
+                    currentPage: Number(page),
+                    totalPages: Math.ceil(totalCount / limit),
+                },
+            });
+        }
+        catch (error) {
+            return res.status(400).json({statusCode: 400, message: "Error: " + error});
         }
     }
 }

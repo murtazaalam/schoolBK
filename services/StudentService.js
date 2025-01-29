@@ -8,6 +8,29 @@ class StudentService {
             throw new Error(error);
         }
     }
+    static async getAllStudent(filter,sortKey,limit,skip){
+        try{
+            return await Student.find(
+                filter,
+                ["-password", "-token"]
+            ).sort(sortKey).skip(skip).limit(limit);
+        }
+        catch(error){
+            throw new Error(error);
+        }
+
+    }
+    static async getStudentCount(filter) {
+        try{
+            return await Student.aggregate([
+                {$match: filter},
+                {$count: 'totalCount'}
+            ])
+        }
+        catch (error) {
+            throw new Error(error);
+        }
+    }
     static async updateStudent(id, updateFields){
         try{
             return await Student.updateOne({_id: id }, {$set: updateFields});
