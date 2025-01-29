@@ -2,6 +2,8 @@ const { jwtVerify } = require("../utils/jwt");
 const AdminService = require("../services/AdminService");
 const SchoolService = require("../services/SchoolService");
 const TeacherService = require("../services/TeacherService");
+const StudentService = require("../services/StudentService");
+const StaffService = require("../services/StaffService");
 
 class AuthValidator{
     static async adminAuthValidate(req, res, next){
@@ -38,6 +40,34 @@ class AuthValidator{
             if(!token) return res.status(404).json({message: "Token Not Found", data: {}, statusCode: 404});
             jwtVerify(token);
             const data = await TeacherService.getTeacher({token});
+            if(!data) return res.status(403).json({message: "Session Expired", data: {}, statusCode: 403});
+            req.teacher = data;
+            next();
+        }
+        catch(error){
+            return res.status(401).json({message: "Unauthorized", data: {}, statusCode: 401});
+        }
+    }
+    static async studentAuthValidate(req, res, next){
+        try{
+            const token = req.headers["authorization"] || req.headers["Authorization"];
+            if(!token) return res.status(404).json({message: "Token Not Found", data: {}, statusCode: 404});
+            jwtVerify(token);
+            const data = await StudentService.getStudent({token});
+            if(!data) return res.status(403).json({message: "Session Expired", data: {}, statusCode: 403});
+            req.teacher = data;
+            next();
+        }
+        catch(error){
+            return res.status(401).json({message: "Unauthorized", data: {}, statusCode: 401});
+        }
+    }
+    static async staffAuthValidate(req, res, next){
+        try{
+            const token = req.headers["authorization"] || req.headers["Authorization"];
+            if(!token) return res.status(404).json({message: "Token Not Found", data: {}, statusCode: 404});
+            jwtVerify(token);
+            const data = await StaffService.getStaff({token});
             if(!data) return res.status(403).json({message: "Session Expired", data: {}, statusCode: 403});
             req.teacher = data;
             next();

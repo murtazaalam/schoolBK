@@ -1,8 +1,12 @@
 const Student = require('../modals/StudentModal');
 class StudentService {
-    static async getStudent(filter) {
+    static async getStudent(filter, projection = null) {
         try{
-            return await Student.findOne(filter);
+            const query = Student.findOne(filter);
+            if(projection){
+                query.select(projection)
+            }
+            return await query;
         }
         catch(error){
             throw new Error(error);

@@ -1,8 +1,12 @@
 const Teacher = require('../modals/TeacherModal');
 class TeacherService {
-    static async getTeacher(filter) {
+    static async getTeacher(filter, projection = null) {
         try{
-            return await Teacher.findOne(filter);
+            const query = Teacher.findOne(filter);
+            if(projection){
+                query.select(projection)
+            }
+            return await query;
         }
         catch(error){
             throw new Error(error);

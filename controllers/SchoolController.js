@@ -5,6 +5,7 @@ const SchoolService = require('../services/SchoolService');
 const TeacherService = require('../services/TeacherService');
 const StudentService = require("../services/StudentService");
 const { applySearchFilter, applySorting, applyPagination } = require('../utils/filters');
+const { response } = require("express");
 
 class SchoolController {
     static async login(req, res){
@@ -156,6 +157,24 @@ class SchoolController {
             return res.status(400).json({statusCode: 400, message: "Error: " + error});
         }
     }
+    static async getTeacherByID(req,res){
+        try{
+            const teacherId = req.teacher._id;
+
+            const teacher = await TeacherService.getTeacher({_id:teacherId}, '-password -token');
+            
+            if(!teacher){
+                return res.status(404).json({message : "Teacher not found"});
+            }
+
+            return res.status(200).json(teacher);
+
+        }
+        catch(error){
+            return res.status(500).json({ statusCode: 500, message: "Error: " + error, data: {} });
+
+        }
+    }
     static async addStudent(req,res){
         try{
             const {phone, email, password} = req.body;
@@ -267,6 +286,24 @@ class SchoolController {
         }
         catch (error) {
             return res.status(400).json({statusCode: 400, message: "Error: " + error});
+        }
+    }
+    static async getStudentByID(req,res){
+        try{
+            const studentId = req.student._id;
+
+            const student = await StudentService.getStudent({_id:studentId},'-password -token');
+            
+            if(!student){
+                return res.status(404).json({message : "Student not found"});
+            }
+
+            return res.status(200).json(student);
+
+        }
+        catch(error){
+            return res.status(500).json({ statusCode: 500, message: "Error: " + error, data: {} });
+
         }
     }
     static async addStaff(req,res){
@@ -382,5 +419,24 @@ class SchoolController {
             return res.status(400).json({statusCode: 400, message: "Error: " + error});
         }
     }
+    static async getStaffByID(req,res){
+        try{
+            const staffId = req.staff._id;
+
+            const staff = await StaffService.getStaff({_id:staffId},'-password -token');
+            
+            if(!staff){
+                return res.status(404).json({message : "Staff not found"});
+            }
+
+            return res.status(200).json(staff);
+
+        }
+        catch(error){
+            return res.status(500).json({ statusCode: 500, message: "Error: " + error, data: {} });
+
+        }
+    }
+    
 }
 module.exports = SchoolController;

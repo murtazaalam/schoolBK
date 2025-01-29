@@ -1,9 +1,13 @@
 const Staff = require('../modals/StaffModal');
 class StaffService {
     
-    static async getStaff(filter) {
+    static async getStaff(filter, projection = null) {
         try{
-            return await Staff.findOne(filter);
+            const query = Staff.findOne(filter);
+            if(projection){
+                query.select(projection)
+            }
+            return await query;
         }
         catch(error){
             throw new Error(error);
