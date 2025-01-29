@@ -159,15 +159,13 @@ class SchoolController {
     }
     static async getTeacherByID(req,res){
         try{
-            const teacherId = req.teacher._id;
+            const teacherId = req.params.id;
 
             const teacher = await TeacherService.getTeacher({_id:teacherId}, '-password -token');
             
-            if(!teacher){
-                return res.status(404).json({message : "Teacher not found"});
-            }
+            if(!teacher) return res.status(404).json({message : "Teacher not found", data: {}, statusCode: 404} );
 
-            return res.status(200).json(teacher);
+            return res.status(200).json({message: "Teacher Data Found", data:teacher, statusCode: 200});
 
         }
         catch(error){
@@ -290,15 +288,13 @@ class SchoolController {
     }
     static async getStudentByID(req,res){
         try{
-            const studentId = req.student._id;
+            const studentId = req.params.id;
 
             const student = await StudentService.getStudent({_id:studentId},'-password -token');
             
-            if(!student){
-                return res.status(404).json({message : "Student not found"});
-            }
+            if(!student) return res.status(404).json({message : "Student not found", data: {}, statusCode: 404} );
 
-            return res.status(200).json(student);
+            return res.status(200).json({message: "Student Data Found", data:student, statusCode: 200});
 
         }
         catch(error){
@@ -421,15 +417,13 @@ class SchoolController {
     }
     static async getStaffByID(req,res){
         try{
-            const staffId = req.staff._id;
+            const staffId = req.params.id;
 
             const staff = await StaffService.getStaff({_id:staffId},'-password -token');
             
-            if(!staff){
-                return res.status(404).json({message : "Staff not found"});
-            }
+            if(!staff) return res.status(404).json({message : "Staff not found", data: {}, statusCode: 404} );
 
-            return res.status(200).json(staff);
+            return res.status(200).json({message: "Staff Data Found", data:staff, statusCode: 200});
 
         }
         catch(error){

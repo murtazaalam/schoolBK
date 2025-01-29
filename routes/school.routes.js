@@ -1,6 +1,6 @@
 const schoolRoutes = require('express').Router();
 const SchoolController = require('../controllers/SchoolController');
-const { schoolAuthValidate, teacherAuthValidate, studentAuthValidate, staffAuthValidate } = require('../middleware/AuthValidator');
+const { schoolAuthValidate } = require('../middleware/AuthValidator');
 const { loginValidator, newTeacherValidator, newStudentValidator, newStaffValidator } = require("../validators/FieldValidator");
 
 
@@ -9,18 +9,18 @@ schoolRoutes.post('/teacher', schoolAuthValidate, newTeacherValidator, SchoolCon
 schoolRoutes.put('/teacher/:id', schoolAuthValidate, newTeacherValidator, SchoolController.updateTeacher);
 schoolRoutes.delete('/teacher/:id', schoolAuthValidate, SchoolController.deleteTeacher);
 schoolRoutes.get('/teacher', schoolAuthValidate, SchoolController.getAllTeachers);
-schoolRoutes.get('/teacher/:id', teacherAuthValidate, SchoolController.getTeacherByID);
+schoolRoutes.get('/teacher/:id', schoolAuthValidate, SchoolController.getTeacherByID);
 
 schoolRoutes.post('/student', schoolAuthValidate, newStudentValidator, SchoolController.addStudent);
 schoolRoutes.put('/student/:id', schoolAuthValidate, newStudentValidator, SchoolController.updateStudent);
 schoolRoutes.delete('/student/:id', schoolAuthValidate, SchoolController.deleteStudent);
 schoolRoutes.get('/student', schoolAuthValidate, SchoolController.getAllStudents);
-schoolRoutes.get('/student/:id', studentAuthValidate, SchoolController.getStudentByID);
+schoolRoutes.get('/student/:id', schoolAuthValidate, SchoolController.getStudentByID);
 
 schoolRoutes.post('/staff', schoolAuthValidate, newStaffValidator, SchoolController.addStaff);
 schoolRoutes.put('/staff/:id', schoolAuthValidate, newStaffValidator, SchoolController.updateStaff);
 schoolRoutes.delete('/staff/:id', schoolAuthValidate, SchoolController.deleteStaff);
 schoolRoutes.get('/staff', schoolAuthValidate, SchoolController.getAllStaffs);
-schoolRoutes.get('/staff/:id', staffAuthValidate, SchoolController.getStaffByID);
+schoolRoutes.get('/staff/:id', schoolAuthValidate, SchoolController.getStaffByID);
 
 module.exports = schoolRoutes;
