@@ -12,7 +12,7 @@ class StudentService {
             throw new Error(error);
         }
     }
-    static async getAllStudent(filter,sortKey,limit,skip){
+    static async getAllStudent(filter, sortKey, skip, limit){
         try{
             return await Student.find(
                 filter,

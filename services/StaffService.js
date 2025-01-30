@@ -13,7 +13,7 @@ class StaffService {
             throw new Error(error);
         }
     }
-    static async getAllStaff(filter,sortKey,limit,skip){
+    static async getAllStaff(filter, sortKey, skip, limit){
         try{
             return await Staff.find(
                 filter,

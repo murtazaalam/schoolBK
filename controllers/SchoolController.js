@@ -134,12 +134,12 @@ class SchoolController {
             totalCount.length > 0 ? (totalCount = totalCount[0].totalCount) : (totalCount = 0)
             
             const teachers = await TeacherService.getAllTeachers(filter, sortKey, skip, pageLimit);
-
+            
             if (!teachers || teachers.length === 0) {
                 return res.status(404).json({
                     message: "No teachers found",
                     statusCode: 404,
-                    data: [],
+                    data: {},
                 });
             }
             return res.status(200).json({
@@ -161,11 +161,10 @@ class SchoolController {
         try{
             const teacherId = req.params.id;
 
-            const teacher = await TeacherService.getTeacher({_id:teacherId}, '-password -token');
-            
+            const teacher = await TeacherService.getTeacher({_id: teacherId}, '-password -token');
             if(!teacher) return res.status(404).json({message : "Teacher not found", data: {}, statusCode: 404} );
 
-            return res.status(200).json({message: "Teacher Data Found", data:teacher, statusCode: 200});
+            return res.status(200).json({message: "Teacher Data Found", statusCode: 200, data: teacher});
 
         }
         catch(error){
@@ -263,12 +262,11 @@ class SchoolController {
             totalCount.length > 0 ? (totalCount = totalCount[0].totalCount) : (totalCount = 0)
             
             const student = await StudentService.getAllStudent(filter, sortKey, skip, pageLimit);
-
             if (!student || student.length === 0) {
                 return res.status(404).json({
                     message: "No students found",
                     statusCode: 404,
-                    data: [],
+                    data: {},
                 });
             }
             return res.status(200).json({
@@ -290,11 +288,10 @@ class SchoolController {
         try{
             const studentId = req.params.id;
 
-            const student = await StudentService.getStudent({_id:studentId},'-password -token');
-            
+            const student = await StudentService.getStudent({_id: studentId}, '-password -token');
             if(!student) return res.status(404).json({message : "Student not found", data: {}, statusCode: 404} );
 
-            return res.status(200).json({message: "Student Data Found", data:student, statusCode: 200});
+            return res.status(200).json({message: "Student Data Found", statusCode: 200, data: student});
 
         }
         catch(error){
@@ -393,11 +390,11 @@ class SchoolController {
             
             const staff = await StaffService.getAllStaff(filter, sortKey, skip, pageLimit);
 
-            if (!student || student.length === 0) {
+            if (!staff || staff.length === 0) {
                 return res.status(404).json({
                     message: "No staff found",
                     statusCode: 404,
-                    data: [],
+                    data: {},
                 });
             }
             return res.status(200).json({
@@ -419,11 +416,10 @@ class SchoolController {
         try{
             const staffId = req.params.id;
 
-            const staff = await StaffService.getStaff({_id:staffId},'-password -token');
-            
+            const staff = await StaffService.getStaff({_id: staffId}, '-password -token');
             if(!staff) return res.status(404).json({message : "Staff not found", data: {}, statusCode: 404} );
 
-            return res.status(200).json({message: "Staff Data Found", data:staff, statusCode: 200});
+            return res.status(200).json({message: "Staff Data Found", statusCode: 200, data: staff});
 
         }
         catch(error){
