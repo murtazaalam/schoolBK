@@ -7,5 +7,6 @@ const { registerValidator, loginValidator } = require('../validators/AdminValida
 adminRoutes.post('/login', loginValidator, AdminController.login);
 adminRoutes.post('/register', registerValidator, AdminController.register);
 adminRoutes.post('/school', adminAuthValidate, newSchoolValidator, AdminController.addSchool);
+adminRoutes.post('/user',adminAuthValidate, AdminController.addUser);
 
 module.exports = adminRoutes;

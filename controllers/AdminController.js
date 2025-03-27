@@ -2,6 +2,7 @@ const bcrypt = require("bcryptjs");
 const { jwtGenerator,jwtVerify } = require("../utils/jwt");
 const AdminService = require("../services/AdminService");
 const SchoolService = require("../services/SchoolService");
+const UserService = require("../services/UserService");
 
 class AdminController {
     static async register(req, res){
@@ -79,6 +80,38 @@ class AdminController {
 
             await SchoolService.addSchool(body);
             return res.status(200).json({message: "School Registered", statusCode: 200})
+        }
+        catch(error){
+            return res.status(400).json({statusCode: 400, message:"Error: "+error, data: {}});
+        }
+    }
+    static async addUser(req, res){
+        try{
+            const { phone, email, password } = req.body;
+            const lowerCaseEmail = email.toLowerCase();
+            console.log("hhhhh");
+
+            const data = await UserService.getUser({$or: [{email: lowerCaseEmail}, {phone}]});
+            
+            if(data) return res.status(202).json({message: "User Already Exists", statusCode: 202});
+            
+            const hashPassword = bcrypt.hashSync(password, 8);
+            const createdBy = req.admin ? req.admin._id : null;
+            const body = {
+                name: req.body.name,
+                email: lowerCaseEmail,
+                phone: req.body.phone,
+                address: req.body.address,
+                city: req.body.city,
+                state: req.body.state,
+                role: req.body.role,
+                created_by: createdBy,
+                password: hashPassword,
+                 
+            }
+
+            await UserService.addUser(body);
+            return res.status(200).json({message: "User Registered", statusCode: 200})
         }
         catch(error){
             return res.status(400).json({statusCode: 400, message:"Error: "+error, data: {}});
