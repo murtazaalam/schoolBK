@@ -89,7 +89,6 @@ class AdminController {
         try{
             const { phone, email, password } = req.body;
             const lowerCaseEmail = email.toLowerCase();
-            console.log("hhhhh");
 
             const data = await UserService.getUser({$or: [{email: lowerCaseEmail}, {phone}]});
             
@@ -117,6 +116,57 @@ class AdminController {
             return res.status(400).json({statusCode: 400, message:"Error: "+error, data: {}});
         }
     }
+
+    static async updateUser(req, res) {
+        try {
+            const { id } = req.params;
+            const { phone, email, password, ...updateFields } = req.body;
+    
+            const data = await UserService.getUser({ _id: id });
+            if (!data) return res.status(404).json({ message: "User Not Found", statusCode: 404 });
+
+            if (email || phone) {
+                const existingUser = await UserService.getUser({
+                    $and: [
+                        { _id: { $ne: id } },
+                        { $or: [{ email: email?.toLowerCase() }, { phone }] }
+                    ]
+                });
+                if (existingUser) return res.status(409).json({ message: "Email or Phone Already Exists", statusCode: 409 });
+            }
+    
+            if (password) updateFields.password = bcrypt.hashSync(password, 8);
+            if (email) updateFields.email = email.toLowerCase();
+
+            if (Object.keys(updateFields).length > 0) {
+                updateFields.updated_at = new Date();
+                await UserService.updateUser(id, updateFields);
+                return res.status(200).json({ message: "User Updated Successfully", statusCode: 200 });
+            }
+            return res.status(400).json({message: "No valid fields provided to update", statusCode: 400});
+        }
+        catch (error) {
+            return res.status(500).json({ statusCode: 500, message: "Error: " + error, data: {} });
+        }
+    }
+    static async deleteUser(req, res) {
+        try {
+            const { id } = req.params; 
+            const data = await UserService.getUser({ _id: id });
+
+            if (!data) return res.status(404).json({ message: "User Not Found", statusCode: 404 });
+            const body = {
+                status: "deleted",
+                updated_at: new Date()
+            }
+            await UserService.updateUser(id, body);
+            return res.status(200).json({ message: "User Deleted Successfully", statusCode: 200 });
+        }
+        catch (error) {
+            return res.status(400).json({ statusCode: 400, message: "Error: " + error, data: {} });
+        }
+    }
+    
 }
 
 module.exports = AdminController;
