@@ -16,6 +16,7 @@ const schoolRoutes = require("./routes/school.routes");
 const studentRoutes = require("./routes/student.routes");
 const teacherRoutes = require("./routes/teacher.routes");
 const staffRoutes = require("./routes/staff.routes");
+const timeTableRoutes = require("./routes/timeTable.routes");
 
 const port = process.env.PORT || 8080;
 const cors = require("cors");
@@ -34,6 +35,7 @@ app.use("/school", schoolRoutes);
 app.use("/student", studentRoutes);
 app.use("/teacher", teacherRoutes);
 app.use("/staff", staffRoutes);
+app.use("/timeTable",timeTableRoutes);
 
 app.listen(port, () => {
     console.log("Listening to port => ",port);
