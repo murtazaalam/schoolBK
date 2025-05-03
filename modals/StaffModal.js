@@ -7,6 +7,10 @@ const StaffDetails = new Schema({
         unique: false,
         required: true
     },
+    staff_id: {
+        type: String,
+        unique: true
+    },
     email: {
         type: String,
         unique: true,

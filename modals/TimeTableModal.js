@@ -17,11 +17,11 @@ const TimeTable = new Schema({
 
     updated_at:{
         type: Date,
-        default: new Date()
+        required: false
     },
     updated_by: {
         type: Schema.Types.ObjectId,
-        required: true
+        required: false
     },
     created_at:{
         type: Date,
@@ -31,4 +31,6 @@ const TimeTable = new Schema({
         type: Schema.Types.ObjectId,
         required: true
     }
-}) 
+})
+
+module.exports = mongoose.model('time_table', TimeTable);

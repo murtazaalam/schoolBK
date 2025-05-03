@@ -78,5 +78,12 @@ class StaffService {
             throw new Error(error);
         }
     }
+    static async countStaffByIdPrefix(prefixRegex) {
+                try {
+                    return await Staff.countDocuments({ staff_id: { $regex: prefixRegex } });
+                } catch (error) {
+                    throw new Error(error);
+                }
+    }
 }
 module.exports = StaffService;

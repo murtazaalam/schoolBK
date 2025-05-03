@@ -52,13 +52,23 @@ class SchoolController {
             if(data) return res.status(202).json({message: "Teacher Already Exists", statusCode: 202});
             
             const hashPassword = bcrypt.hashSync(password, 8);
+            const numericSchoolId = parseInt(req.school.school_id.replace('ETS', ''), 10);
+            const year = new Date().getFullYear().toString().slice(-2); 
+            const staticPart = `${numericSchoolId}${year}20`;
+    
+            const regex = new RegExp(`^${staticPart}`);
+            const teacherCount = await TeacherService.countTeachersByIdPrefix(regex);
+    
+            const increment = (teacherCount + 1).toString(); 
+            const teacher_id = `${staticPart}${increment}`;
             const body = {
                 name: req.body.name,
                 email: lowerCaseEmail,
                 phone: req.body.phone,
                 address: req.body.address,
                 password: hashPassword,
-                school_id: req.school._id
+                school_id: req.school._id,
+                teacher_id
             }
             
             await TeacherService.addTeacher(body);
@@ -179,6 +189,15 @@ class SchoolController {
             const data = await StudentService.getStudent({$or: [{email: lowerCaseEmail}, {phone}]});
             if(data) return res.status(202).json({message: "Teacher Already Exists", statusCode: 202});
             const hashPassword = bcrypt.hashSync(password, 8);
+            const numericSchoolId = parseInt(req.school.school_id.replace('ETS', ''), 10);
+            const year = new Date().getFullYear().toString().slice(-2); 
+            const staticPart = `${numericSchoolId}${year}19`;
+    
+            const regex = new RegExp(`^${staticPart}`);
+            const studentCount = await StudentService.countStudentByIdPrefix(regex);
+    
+            const increment = (studentCount + 1).toString(); 
+            const student_id = `${staticPart}${increment}`;
             const body = {
                 name: req.body.name,
                 email: lowerCaseEmail,
@@ -186,6 +205,7 @@ class SchoolController {
                 address: req.body.address,
                 password: hashPassword,
                 school_id: req.school._id,
+                student_id
             }
             await StudentService.addStudent(body);
             return res.status(200).json({message: "Student Registered ", statusCode: 200})
@@ -306,6 +326,15 @@ class SchoolController {
             const data = await StaffService.getStaff({$or: [{email: lowerCaseEmail}, {phone}]});
             if(data) return res.status(202).json({message: "Staff Already Exists", statusCode: 202});
             const hashPassword = bcrypt.hashSync(password, 8);
+            const numericSchoolId = parseInt(req.school.school_id.replace('ETS', ''), 10);
+            const year = new Date().getFullYear().toString().slice(-2); 
+            const staticPart = `${numericSchoolId}${year}19`;
+    
+            const regex = new RegExp(`^${staticPart}`);
+            const staffCount = await StaffService.countStaffByIdPrefix(regex);
+    
+            const increment = (staffCount + 1).toString(); 
+            const staff_id = `${staticPart}${increment}`;
             const body = {
                 name: req.body.name,
                 email: lowerCaseEmail,
@@ -313,6 +342,7 @@ class SchoolController {
                 address: req.body.address,
                 password: hashPassword,
                 school_id: req.school._id,
+                staff_id
             }
             await StaffService.addStaff(body);
             return res.status(200).json({message: "Staff Registered ", statusCode: 200})

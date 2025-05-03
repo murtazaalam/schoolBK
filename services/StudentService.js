@@ -77,5 +77,13 @@ class StudentService {
             throw new Error(error);
         }
     }
+
+    static async countStudentByIdPrefix(prefixRegex) {
+            try {
+                return await Student.countDocuments({ student_id: { $regex: prefixRegex } });
+            } catch (error) {
+                throw new Error(error);
+            }
+    }
 }
 module.exports = StudentService;

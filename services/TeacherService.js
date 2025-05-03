@@ -78,5 +78,12 @@ class TeacherService {
             throw new Error(error);
         }
     }
+    static async countTeachersByIdPrefix(prefixRegex) {
+        try {
+            return await Teacher.countDocuments({ teacher_id: { $regex: prefixRegex } });
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
 }
 module.exports = TeacherService;

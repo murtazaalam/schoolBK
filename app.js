@@ -35,7 +35,7 @@ app.use("/school", schoolRoutes);
 app.use("/student", studentRoutes);
 app.use("/teacher", teacherRoutes);
 app.use("/staff", staffRoutes);
-app.use("/timeTable",timeTableRoutes);
+app.use("/time-table",timeTableRoutes);
 
 app.listen(port, () => {
     console.log("Listening to port => ",port);

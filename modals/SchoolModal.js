@@ -7,6 +7,10 @@ const School = new Schema({
         unique: false,
         required: true
     },
+    school_id: {
+        type: String,
+        unique: true
+    },
     email: {
         type: String,
         unique: true,
@@ -59,6 +63,18 @@ const School = new Schema({
         required: false,
         default: new Date,
     }
-})
+});
+School.pre('save', async function (next) {
+    if (this.isNew) {
+      const lastSchool = await this.constructor.findOne().sort({ school_id: -1 });
+      let newId = 1;
+      if (lastSchool && lastSchool.school_id) {
+        const lastNumber = parseInt(lastSchool.school_id.replace('ETS', ''), 10);
+        newId = lastNumber + 1;
+      }
+      this.school_id = 'ETS' + String(newId).padStart(4, '0');
+    }
+    next();
+  });
 
 module.exports = mongoose.model('school', School);

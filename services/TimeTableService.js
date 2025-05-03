@@ -1,4 +1,4 @@
-const TimeTable = require('../modals/TimeTableModals');
+const TimeTable = require('../modals/TimeTableModal');
 
 class TimeTableService {
     static async getTimeTable(filter) {

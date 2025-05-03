@@ -3,9 +3,10 @@ const TimeTableService = require('../services/TimeTableService');
 class TimeTableController {
     static async addTimeTable(req, res) {
         try {
-            const { school_id, class: className, time_table, created_by } = req.body;
 
-            if (!school_id || !className || !time_table || !created_by) {
+            const { className, time_table } = req.body;
+
+            if ( !className || !time_table ) {
                 return res.status(400).json({
                     statusCode: 400,
                     message: "Missing required fields",
@@ -14,10 +15,10 @@ class TimeTableController {
             }
 
             const body = {
-                school_id,
+                school_id: req.school._id,
                 class: className,
                 time_table,
-                created_by
+                created_by: req.school._id
             };
 
             const result = await TimeTableService.addTimeTable(body);

@@ -5,3 +5,5 @@ const { loginValidator} = require("../validators/FieldValidator");
 
 timeTableRoutes.post('/add-time-table', schoolAuthValidate, TimeTableController.addTimeTable);
 timeTableRoutes.get('/time-table', schoolAuthValidate, TimeTableController.getTimeTable);
+
+module.exports = timeTableRoutes;
